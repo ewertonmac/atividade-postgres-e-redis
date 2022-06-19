@@ -1,0 +1,304 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API",
+        "version": "0.1.0",
+        "title": "Pessoas api",
+        "contact": {
+            "email": "ewertoncz@gmail.com"
+        }
+    },
+    "tags": [
+        {
+            "name": "Pessoa",
+            "description": "Pessoa controller"
+        }
+    ],
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "paths": {
+        "/pessoa": {
+            "get": {
+                "tags": [
+                    "Pessoa"
+                ],
+                "description": "Busca pessoas cadastradas na base",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "pagina",
+                        "in": "query",
+                        "description": "Número da página",
+                        "required": false,
+                        "type": "integer",
+                        "default": 1
+                    },
+                    {
+                        "name": "itens",
+                        "in": "query",
+                        "description": "Itens por página",
+                        "required": false,
+                        "type": "integer",
+                        "default": 10
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/PessoasResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Pessoa"
+                ],
+                "description": "Cadastra uma nova pessoa na base",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "nome",
+                        "in": "body",
+                        "description": "Nome e email da pessoa",
+                        "required": true,
+                        "type": "object",
+                        "schema": {
+                            "$ref": "#/definitions/Pessoa"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string",
+                            "example": "Usuário criado"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "string",
+                            "example": "Falha ao salvar"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Pessoa"
+                ],
+                "description": "Atualiza o nome de uma pessoa",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "nome",
+                        "in": "body",
+                        "description": "Nome e email da pessoa",
+                        "required": true,
+                        "type": "object",
+                        "schema": {
+                            "$ref": "#/definitions/Pessoa"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "string",
+                            "example": "Usuário atualizado"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "string",
+                            "example": "Falha ao atualizar"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "type": "string",
+                            "example": "Usuário não encontrado"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/pessoa/{email}": {
+            "get": {
+                "tags": [
+                    "Pessoa"
+                ],
+                "description": "Busca uma pessoa a partir do e-mail informado",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "E-mail da pessoa",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/PessoaResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "type": "string",
+                            "example": "Usuário não encontrado"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Pessoa"
+                ],
+                "description": "Deleta uma pessoa da base",
+                "consumes": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "E-mail da pessoa",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "string",
+                            "example": "Usuário removido"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "string",
+                            "example": "Falha ao remover"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "type": "string",
+                            "example": "Usuário não encontrado"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "PessoasResponse": {
+            "type": "object",
+            "properties":{
+                "pessoas": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PessoaResponse"
+                    }
+                },
+                "totalDeItems":{
+                    "type":"integer"
+                },
+                "pagina": {
+                    "type": "integer"
+                },
+                "itensPorPagina":{
+                    "type":"integer"
+                }
+            }
+        },
+        "PessoaResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "636a1c60-2847-4d6f-9ab1-e7011b01f3e2"
+                },
+                "nome": {
+                    "type": "string",
+                    "example": "Ewerton Maciel"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "ewerton@mail.com"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "example": "2022-06-19 12:01:32.791 -0300"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "example": "2022-06-19 12:01:32.791 -0300"
+                }
+            }
+        },
+        "Pessoa": {
+            "type": "object",
+            "properties": {
+                "nome": {
+                    "type": "string",
+                    "example": "Ewerton Maciel"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "ewerton@mail.com"
+                }
+            }
+        }
+    }
+}

@@ -3,8 +3,18 @@ const { redisInstance } = require('../database/redis')
 
 
 const getPessoas = async (request, response) => {
-    const pessoas = await Pessoa.findAll();
-    response.status(200).send(pessoas);
+    const pagina = request.query.pagina > 0 ? parseInt(request.query.pagina) : 1;
+    const itensPorPagina = parseInt(request.query.itens) || 10;
+    const { rows, count } = await Pessoa.findAndCountAll({
+        offset: (pagina - 1) * itensPorPagina,
+        limit: itensPorPagina,
+    });
+    response.status(200).json({
+        pessoas: rows,
+        totalDeItems: count,
+        pagina,
+        itensPorPagina,
+    });
 };
 
 const getPessoa = async (request, response) => {
@@ -28,7 +38,7 @@ const getPessoa = async (request, response) => {
 const addPessoa = async (request, response) => {
     const pessoa = Pessoa.build(request.body);
     pessoa.save().then(() => {
-        response.status(200).send('Usuário criado!');
+        response.status(201).send('Usuário criado!');
     }).catch(err => {
         response.status(400).send('Falha ao salvar');
     });
@@ -47,7 +57,7 @@ const deletarPessoa = async (request, response) => {
             deletePessoaFromCache(email)
             response.status(200).send('Usuário removido');
         } else {
-            response.status(200).send('Usuário não encontrado');
+            response.status(404).send('Usuário não encontrado');
         }
     }).catch(err => {
         response.status(400).send('Falha ao remover');
@@ -56,21 +66,18 @@ const deletarPessoa = async (request, response) => {
 };
 
 const atualizarPessoa = async (request, response) => {
+    const { nome, email } = request.body
 
-    Pessoa.update({
-        nome: request.body.nome
-    },
-        {
-            where: {
-                email: request.body.email
-            }
-        }
-    ).then(result => {
-        if (result > 0) {
+    Pessoa.findOne({ where: { email } }).then(pessoa => {
+        if (pessoa) {
+            pessoa.nome = nome
+            setPessoaOnCache(pessoa)
+            pessoa.update()
             response.status(200).send('Usuário atualizado');
         } else {
-            response.status(200).send('Usuário não encontrado');
+            response.status(404).send('Usuário não encontrado');
         }
+
     }).catch(err => {
         console.log(err);
         response.status(400).send('Falha ao atualizar');
