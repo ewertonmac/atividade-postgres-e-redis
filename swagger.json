@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "API",
+        "description": "API desenvolvida na disciplina de Banco de dados II, curso de Análise e Desenvolvimento de Sistemas - IFPB.\nDesenvolvida em node.js com postgresSQL para persistência dos dados e redis para cache.\nLink do repositório: https://github.com/ewertonmac/atividade-postgres-e-redis",        
         "version": "0.1.0",
         "title": "Pessoas api",
         "contact": {
