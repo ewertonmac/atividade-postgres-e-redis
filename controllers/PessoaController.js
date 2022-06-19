@@ -2,9 +2,14 @@ const redis = require('redis')
 const Pessoa = require('../models/pessoa');
 require('dotenv').config();
 
+const username = process.env.REDIS_USER
+const password = process.env.REDIS_PASSWORD
+const host = process.env.REDIS_HOST
+const port = process.env.REDIS_PORT
+
 const cache = redis.createClient(
-    {url:`redis://${process.env.REDIS_URL}:${process.env.REDIS_PORT}`}
-    )
+    {url:`redis://${username}:${password}@${host}:${port}`}
+)
 
 const getPessoas = async (request, response)=>{
     const pessoas = await Pessoa.findAll();
@@ -29,20 +34,6 @@ const getPessoa = async (request, response)=>{
     }
 }
 
-const getPessoaFromCache = async (email) => {
-    try{
-        const pessoa = await cache.get(email)
-        return JSON.parse(pessoa)
-    }
-    catch(err){
-        return null
-    }
-}
-
-const setPessoaOnCache = async (pessoa) => {
-    return await cache.set(pessoa.email, JSON.stringify(pessoa), {EX: 3600})
-}
-
 const addPessoa = async (request, response) =>{
     const pessoa = Pessoa.build(request.body);
     pessoa.save().then(()=>{
@@ -62,6 +53,7 @@ const deletarPessoa = async (request, response)=>{
         }
     }).then(result=>{
         if(result>0){
+            deletePessoaFromCache(email)
             response.status(200).send('Usuário removido');
         }else{
             response.status(200).send('Usuário não encontrado');
@@ -92,6 +84,34 @@ const atualizarPessoa = async(request, response)=>{
         response.status(400).send('Falha ao atualizar');
     });
 
+}
+
+const getPessoaFromCache = async (email) => {
+    try{
+        const pessoa = await cache.get(email)
+        return JSON.parse(pessoa)
+    }
+    catch(err){
+        return null
+    }
+}
+
+const deletePessoaFromCache = async (email) => {
+    try{
+        return await cache.del(email)
+    }
+    catch(err){
+        console.error('Erro ao deletar pessoa do cache')
+    }
+}
+
+const setPessoaOnCache = async (pessoa) => {
+    try{
+        return await cache.set(pessoa.email, JSON.stringify(pessoa), {EX: 3600})
+    }
+    catch(err){
+        console.error('Erro ao setar usuário em cache')
+    }
 }
 
 const sincronizar = async(request, response) =>{
