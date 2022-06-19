@@ -4,6 +4,8 @@ const app = express();
 app.use(express.json());
 const pessoaController = require('./controllers/PessoaController');
 
+const port = process.env.PORT || 3000
+
 app.get('/', pessoaController.sincronizar);
 
 app.get('/pessoas', pessoaController.getPessoas);
@@ -16,6 +18,6 @@ app.delete('/pessoa/:email', pessoaController.deletarPessoa);
 
 app.put('/pessoa', pessoaController.atualizarPessoa);
 
-app.listen(process.env.API_PORT, ()=>{
-    console.log(`API rodando na porta ${process.env.API_PORT}`);
+app.listen(port, ()=>{
+    console.log(`API rodando na porta ${port}`);
 });
